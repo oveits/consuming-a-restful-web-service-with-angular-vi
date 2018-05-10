@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 //import { catchError, map } from 'rxjs/operators';
 import { map } from 'rxjs/operators';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+
 
 @Component({
   selector: 'app-root',
@@ -16,7 +18,7 @@ export class AppComponent implements OnInit {
   count = 0;
   //selectedContent = null;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, public sanitizer: DomSanitizer) {}
 
   ngOnInit() { 
     this.getRestItems();

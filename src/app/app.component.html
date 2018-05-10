@@ -9,4 +9,4 @@
     </li>
   </ul>
 </div>
-<div [innerHTML]="selectedContent"></div>
+<div *ngIf="undefined !== selectedContent" [innerHTML]="sanitizer.bypassSecurityTrustHtml(selectedContent)"></div>
