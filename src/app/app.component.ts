@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 //import { HttpClient } from '@angular/common/http';
 //import { catchError, map } from 'rxjs/operators';
-//import { map } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { AppService } from './app.service';
 
@@ -12,12 +12,7 @@ import { AppService } from './app.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  title = 'app';
-  restItems: any;
-  //restItemsUrl = 'https://public-api.wordpress.com/rest/v1.1/sites/vocon-it.com/posts/3078';
-  restItemsUrl = 'https://public-api.wordpress.com/rest/v1.1/sites/vocon-it.com/posts';
-  count = 0;
-  //selectedContent = null;
+  posts: any;
 
   constructor(private appService : AppService, public sanitizer: DomSanitizer) {}
 
@@ -29,9 +24,16 @@ export class AppComponent implements OnInit {
   getRestItems(): void {
     this.appService.getAll()
       .subscribe(
-        restItems => {
-          this.restItems = restItems;
-          console.log(this.restItems);
+        posts => {
+          this.posts = 
+            posts.map(
+              post => { 
+                return { 
+                  "title": this.sanitizer.bypassSecurityTrustHtml(post.title), 
+                  "content": this.sanitizer.bypassSecurityTrustHtml(post.content)
+                } 
+            });
+          console.log(this.posts);
         }
       )
   }

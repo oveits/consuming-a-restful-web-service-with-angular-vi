@@ -15,7 +15,7 @@ export class AppService {
   getAll() {
     return this.http
       .get<any[]>(this.url)
-      .pipe(map(data => data));
+      .pipe(map(data => data['posts']));
   }
 
 }
