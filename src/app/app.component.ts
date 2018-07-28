@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { AppService } from './app.service';
+import { SafePost } from './safe-post.interface';
 
 
 @Component({
@@ -11,37 +11,15 @@ import { AppService } from './app.service';
 export class AppComponent implements OnInit {
   posts: SafePost[];
 
-  constructor(private appService: AppService, public sanitizer: DomSanitizer) {}
+  constructor(private appService: AppService) {}
 
   ngOnInit() {
     this.getRestItems();
   }
 
-  safePost(apiDataSinglePost: APIDataSinglePost): SafePost  {
-    return {
-      'title': this.sanitizer.bypassSecurityTrustHtml(apiDataSinglePost.title),
-      'content': this.sanitizer.bypassSecurityTrustHtml(apiDataSinglePost.content)
-    };
-  }
-
   // Read all REST Items
   getRestItems(): void {
     this.appService.getAll()
-      .subscribe(
-        apiDataAllPosts => {
-          this.posts = apiDataAllPosts.map(apiDataSinglePost =>  this.safePost(apiDataSinglePost));
-          console.log(this.posts);
-        }
-      );
+      .subscribe(posts => { this.posts = posts; });
   }
-}
-
-interface SafePost {
-  'title': SafeHtml;
-  'content': SafeHtml;
-}
-
-interface APIDataSinglePost {
-  'title': string;
-  'content': string;
 }
