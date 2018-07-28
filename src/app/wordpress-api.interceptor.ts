@@ -16,6 +16,10 @@ export class WordPressApiInterceptor implements HttpInterceptor {
         next: HttpHandler
     ): Observable<HttpEvent<any>> {
         console.log('WordpressApiInterceptor was called');
-        return next.handle(request);
+
+        const clonedRequest = request.clone({
+            headers: request.headers.set('Content-Type', 'BLABLUB')
+        });
+        return next.handle(clonedRequest);
     }
 }
