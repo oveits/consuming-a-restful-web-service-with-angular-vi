@@ -23,3 +23,4 @@ export class AppComponent implements OnInit {
     return this.appService.getAll()
       .pipe(posts => posts);
   }
+}
