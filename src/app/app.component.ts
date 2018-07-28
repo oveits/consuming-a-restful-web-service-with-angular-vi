@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
 import { AppService } from './app.service';
 import { SafePost } from './safe-post.interface';
 
@@ -9,17 +10,16 @@ import { SafePost } from './safe-post.interface';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  posts: SafePost[];
+  posts$: Observable<SafePost[]>;
 
   constructor(private appService: AppService) {}
 
   ngOnInit() {
-    this.getRestItems();
+    this.posts$ = this.getRestItems$();
   }
 
   // Read all REST Items
-  getRestItems(): void {
-    this.appService.getAll()
-      .subscribe(posts => { this.posts = posts; });
+  getRestItems$(): Observable<SafePost[]> {
+    return this.appService.getAll()
+      .pipe(posts => posts);
   }
-}
