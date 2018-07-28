@@ -1,7 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-//import { HttpClient } from '@angular/common/http';
-//import { catchError, map } from 'rxjs/operators';
-import { map } from 'rxjs/operators';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { AppService } from './app.service';
 
@@ -12,30 +9,39 @@ import { AppService } from './app.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  posts: any;
+  posts: SafePost[];
 
-  constructor(private appService : AppService, public sanitizer: DomSanitizer) {}
+  constructor(private appService: AppService, public sanitizer: DomSanitizer) {}
 
-  ngOnInit() { 
+  ngOnInit() {
     this.getRestItems();
+  }
+
+  safePost(apiDataSinglePost: APIDataSinglePost): SafePost  {
+    return {
+      'title': this.sanitizer.bypassSecurityTrustHtml(apiDataSinglePost.title),
+      'content': this.sanitizer.bypassSecurityTrustHtml(apiDataSinglePost.content)
+    };
   }
 
   // Read all REST Items
   getRestItems(): void {
     this.appService.getAll()
       .subscribe(
-        posts => {
-          this.posts = 
-            posts.map(
-              post => { 
-                return { 
-                  "title": this.sanitizer.bypassSecurityTrustHtml(post.title), 
-                  "content": this.sanitizer.bypassSecurityTrustHtml(post.content)
-                } 
-            });
+        apiDataAllPosts => {
+          this.posts = apiDataAllPosts.map(apiDataSinglePost =>  this.safePost(apiDataSinglePost));
           console.log(this.posts);
         }
-      )
+      );
   }
+}
 
+interface SafePost {
+  'title': SafeHtml;
+  'content': SafeHtml;
+}
+
+interface APIDataSinglePost {
+  'title': string;
+  'content': string;
 }
