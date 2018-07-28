@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
 // import { HttpClient } from '@angular/common/http';
 // import { catchError, map } from 'rxjs/operators';
 import { map } from 'rxjs/operators';
@@ -12,36 +12,38 @@ import { AppService } from './app.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit, OnDestroy {
-  posts: any;
-  private subscription: Subscription;
+export class AppComponent implements OnInit {
+// export class AppComponent {
+  posts$: Observable<Post>;
 
   constructor(private appService: AppService, public sanitizer: DomSanitizer) {}
 
   ngOnInit() {
-    this.subscription = this.getRestItems();
+    this.posts$ = this.getRestItems$();
   }
 
   // Read all REST Items
-  getRestItems(): Subscription {
+  getRestItems$(): Observable<Post> {
     return this.appService.getAll()
-      .subscribe(
-        posts => {
-          this.posts =
-            posts.map(
-              post => {
-                return {
-                  'title': this.sanitizer.bypassSecurityTrustHtml(post.title), 
-                  'content': this.sanitizer.bypassSecurityTrustHtml(post.content)
-                }
-            });
-          console.log(this.posts);
-        }
+      .pipe(
+        map(
+          posts => {
+            const myPosts = posts.map(
+                post => {
+                  return {
+                    'title': this.sanitizer.bypassSecurityTrustHtml(post.title), 
+                    'content': this.sanitizer.bypassSecurityTrustHtml(post.content)
+                  };
+              });
+            console.log(myPosts);
+            return myPosts;
+            }
+          )
       );
   }
+}
 
-  ngOnDestroy() {
-    this.subscription.unsubscribe();
-  }
-
+interface Post {
+  'title': DomSanitizer;
+  'content': DomSanitizer;
 }
