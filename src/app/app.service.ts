@@ -23,7 +23,7 @@ export class AppService {
     return this.http
       .get<any[]>(this.url)
       .pipe(map(apiDataAllPosts => {
-        const mySafePosts: SafePost[] = apiDataAllPosts['posts']
+        const mySafePosts: SafePost[] = apiDataAllPosts
           .map(apiDataSinglePost =>  this.safePost(apiDataSinglePost));
         console.log(mySafePosts);
         return mySafePosts;

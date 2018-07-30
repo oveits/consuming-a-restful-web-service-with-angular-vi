@@ -8,6 +8,7 @@ import {
 } from '@angular/common/http';
 
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class WordPressApiInterceptor implements HttpInterceptor {
@@ -20,6 +21,11 @@ export class WordPressApiInterceptor implements HttpInterceptor {
         const clonedRequest = request.clone({
             headers: request.headers.set('Content-Type', 'BLABLUB')
         });
-        return next.handle(clonedRequest);
+        return next.handle(clonedRequest).pipe(map(event => {
+            if (request.method === 'GET' && event instanceof HttpResponse) {
+                 console.log('Response Interceptor for GET');
+                 return event.clone({ body: event.body['posts']});
+            }
+         }));
     }
 }
