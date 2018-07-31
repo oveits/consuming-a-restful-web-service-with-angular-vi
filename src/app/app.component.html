@@ -1,6 +1,45 @@
 <h1>Blog Posts</h1>
 
+
+<!-- <div> {{(posts$$ | async | async)}}</div> -->
+<!-- <div>{{getRestItemsInterval$$() | async | async}}</div> -->
+<!-- <div> {{(posts$ | async)}}</div> -->
+<!-- <div>  {{getRestItemsIntervalVoidDoesNOtSetPosts$$() | async | async}} </div> -->
+
+<!-- <div> {{(postsVoid$$ | async | async)}}</div> -->
+
+<div *ngIf="undefined === posts">Loading...</div>
+
+
+<ul>
+  <li *ngFor="let post of posts" [innerHTML]="post.title" (click)="selectedPost = post"> 
+  </li>
+</ul>
+
+<div *ngIf="selectedPost">
+  <h1 [innerHTML]="selectedPost.title"></h1>
+  <div [innerHTML]="selectedPost.content"></div>
+</div>
+
+<!-- Blinking:
+
+<div *ngIf="null === (posts$$ | async | async)">Loading...</div>
+
+
+<ul>
+  <li *ngFor="let post of (posts$$ | async | async)" [innerHTML]="post.title" (click)="selectedPost = post"> 
+  </li>
+</ul>
+
+<div *ngIf="selectedPost">
+  <h1 [innerHTML]="selectedPost.title"></h1>
+  <div [innerHTML]="selectedPost.content"></div>
+</div>
+
+Blinking again?:
+
 <div *ngIf="null === (posts$ | async)">Loading...</div>
+
 
 <ul>
   <li *ngFor="let post of (posts$ | async)" [innerHTML]="post.title" (click)="selectedPost = post"> 
@@ -10,4 +49,4 @@
 <div *ngIf="selectedPost">
   <h1 [innerHTML]="selectedPost.title"></h1>
   <div [innerHTML]="selectedPost.content"></div>
-</div>
+</div> -->
