@@ -1,14 +1,24 @@
 <h1>Blog Posts</h1>
 
+<!-- <div "let a = posts$$" >
+  <span>{{a}}</span>
+</div> -->
 
-<!-- <div> {{(posts$$ | async | async)}}</div> -->
+<!-- <div (posts)="posts$$  | async | async"> -->
+<!-- <input [ngModel]="postsVoid$$ | async | async" (ngModelChange)="posts = $event"> -->
+
+<ng-template #loading>
+  Loading...
+</ng-template>
+
+<!-- <div *ngIf="posts$$  | async | async; let posts; else loading"> -->
+
 <!-- <div>{{getRestItemsInterval$$() | async | async}}</div> -->
 <!-- <div> {{(posts$ | async)}}</div> -->
 <!-- <div>  {{getRestItemsIntervalVoidDoesNOtSetPosts$$() | async | async}} </div> -->
 
+<div *ngIf="!(posts == (postsVoid$$  | async | async)); else loading"></div>
 <!-- <div> {{(postsVoid$$ | async | async)}}</div> -->
-
-<div *ngIf="undefined === posts">Loading...</div>
 
 
 <ul>
@@ -50,3 +60,5 @@ Blinking again?:
   <h1 [innerHTML]="selectedPost.title"></h1>
   <div [innerHTML]="selectedPost.content"></div>
 </div> -->
+
+<!-- </div> -->

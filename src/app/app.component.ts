@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AppService } from './app.service';
 import { SafePost } from './safe-post.interface';
@@ -12,12 +12,13 @@ import { map } from 'rxjs/operators';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit, OnDestroy {
+  interval_MSEC = 10000;
   posts$$: Observable<Observable<SafePost[]>>;
   postsVoid$$: Observable<Observable<void>>;
   posts$: Observable<SafePost[]>;
-  posts: SafePost[];
+  @Input()  posts: SafePost[];
 
-  myInterval = interval(5000);
+  myInterval = interval(10000);
   subInner: Subscription;
   subOuter: Subscription;
 
@@ -31,7 +32,7 @@ export class AppComponent implements OnInit, OnDestroy {
     // this.posts$ = this.getRestItemsIntervalNotRefreshing$();
     // this.posts$$ = this.getRestItemsInterval$$();
 
-    // this.postsVoid$$ = this.getRestItemsIntervalVoid$$();
+    this.postsVoid$$ = this.getRestItemsIntervalVoid$$();
 
     // works fine:
     // this.subinner = this.assignRestItemsToPosts$().subscribe();
@@ -44,7 +45,7 @@ export class AppComponent implements OnInit, OnDestroy {
     // });
 
     // simple without unsubscribes:
-    // interval(5000).subscribe((counter) => {
+    // interval(this.interval_MSEC).subscribe((counter) => {
     //   this.appService.getAll().subscribe(posts => {
     //     this.posts = posts;
     //   });
@@ -63,16 +64,16 @@ export class AppComponent implements OnInit, OnDestroy {
     // });
 
     // equivalent:
-    this.subOuter = this.myInterval.pipe(map((counter) => {
-      if (this.subInner !== undefined) {
-        console.log('unsubscribing subInner');
-        this.subInner.unsubscribe();
-      }
-      this.subInner = this.appService.getAll().pipe(map(posts => {
-        this.posts = posts;
-      })).subscribe();
-      console.log(counter + ': read restItems');
-    })).subscribe();
+    // this.subOuter = this.myInterval.pipe(map((counter) => {
+    //   if (this.subInner !== undefined) {
+    //     console.log('unsubscribing subInner');
+    //     this.subInner.unsubscribe();
+    //   }
+    //   this.subInner = this.appService.getAll().pipe(map(posts => {
+    //     this.posts = posts;
+    //   })).subscribe();
+    //   console.log(counter + ': read restItems');
+    // })).subscribe();
 
     // other way round does not mase sinse, because the getAll() and therefore the REST API is only called once:
     // this.subouter = this.appService.getAll().subscribe(posts => {
@@ -88,7 +89,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
 
   getRestItemsInterval$$(): Observable<Observable<SafePost[]>> {
-    return interval(5000)
+    return interval(this.interval_MSEC)
       .pipe(
         map(
           counter => {
@@ -104,7 +105,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   getRestItemsIntervalVoid$$(): Observable<Observable<void>> {
-    return interval(5000)
+    return interval(this.interval_MSEC)
       .pipe(
         map(
           counter => {
@@ -116,7 +117,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   getRestItemsIntervalNotRefreshing$(): Observable<SafePost[]> {
-    return interval(5000)
+    return interval(this.interval_MSEC)
       .pipe(
         // map(
           counter => {
@@ -132,11 +133,12 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   getRestItemsIntervalBlinkingBehavior$$(): Observable<Observable<SafePost[]>> {
-    return interval(5000)
+    return interval(this.interval_MSEC)
       .pipe(
         map(
           counter => {
           console.log(counter + ': read restItems');
+          console.log(this.posts);
           return this.getRestItems$();
           }
         )
@@ -144,7 +146,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   getRestItemsIntervalTogglingBehavior2$(): Observable<SafePost[]> {
-    return interval(5000)
+    return interval(this.interval_MSEC)
       .pipe(() => this.getRestItems$());
   }
 
