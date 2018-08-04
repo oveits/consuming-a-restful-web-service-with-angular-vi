@@ -1,7 +1,9 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
 import { AppService } from './app.service';
 import { SafePost } from './safe-post.interface';
-import { interval, Subscription} from 'rxjs';
+import { interval } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 
 @Component({
@@ -9,29 +11,30 @@ import { interval, Subscription} from 'rxjs';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit, OnDestroy {
-  posts: SafePost[];
-  subInner: Subscription;
-  subOuter: Subscription;
-
+export class AppComponent implements OnInit {
+  posts$$: Observable<Observable<SafePost[]>>;
 
   constructor(private appService: AppService) {}
 
   ngOnInit() {
-    this.subOuter = interval(10000).subscribe((counter) => {
-      if (this.subInner !== undefined) {
-        console.log('unsubscribing subInner');
-        this.subInner.unsubscribe();
-      }
-      this.subInner = this.appService.getAll().subscribe(posts => {
-        this.posts = posts;
-      });
-      console.log(counter + ': read restItems');
-    });
+    this.posts$$ = this.getRestItemsIntervalBlinkingBehavior$$();
   }
 
-  ngOnDestroy() {
-    this.subInner.unsubscribe();
-    this.subOuter.unsubscribe();
+  getRestItemsIntervalBlinkingBehavior$$(): Observable<Observable<SafePost[]>> {
+    return interval(10000)
+      .pipe(
+        map(
+          counter => {
+          console.log(counter + ': read restItems');
+          return this.getRestItems$();
+          }
+        )
+      );
+  }
+
+  // Read all REST Items
+  getRestItems$(): Observable<SafePost[]> {
+    return this.appService.getAll()
+      .pipe(posts => posts);
   }
 }
