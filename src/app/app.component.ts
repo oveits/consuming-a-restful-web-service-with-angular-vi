@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Observable, pipe, Subscription } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
 import { AppService } from './app.service';
 import { SafePost } from './safe-post.interface';
 
@@ -17,18 +17,15 @@ export const MAX_INTERVAL_MS = 60000; // 1 min
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit, OnDestroy {
-  posts$$: Observable<Observable<SafePost[]>>;
-  posts$: Observable<SafePost[]>;
+export class AppComponent implements OnInit {
   posts: SafePost[];
-  mySubscription: Subscription;
-  exponentialBackoffTimer: Observable<number>;
+  n: number;
+  exponentialBackoffTimer$$: Observable<Observable<void>>;
 
   constructor(private appService: AppService) {}
 
   ngOnInit() {
-    // this.posts$ = this.getRestItems$();
-    this.exponentialBackoffTimer =
+    this.exponentialBackoffTimer$$ =
       fromEvent(document, 'mousemove').pipe(
 
         // There could be many mousemoves, we'd want to sample only
@@ -40,36 +37,18 @@ export class AppComponent implements OnInit, OnDestroy {
 
         // Resetting exponential interval operator
         switchMapTo(intervalBackoff({
-          backoffDelay: (iteration, initialInterval) => Math.pow(1.2, iteration) * initialInterval,
+          backoffDelay: (iteration, initialInterval) => Math.pow(1.5, iteration) * initialInterval,
           initialInterval: INITIAL_INTERVAL_MS,
           maxInterval: MAX_INTERVAL_MS
         })),
 
         // attaching the function that is to be reset:
-        tap( n => {
+        map( n => {
           console.log('iteration since reset: ' + n);
-          this.mySubscription = this.reSubscribeToGetAndAssignPosts$(
-            this.mySubscription,
-            this.getAndAssignPosts$()
-          );
+          this.n = n;
+          return this.getAndAssignPosts$();
         }),
       );
-  }
-
-  /*
-    removes old subscription and returns new subscription
-    Parameters: mySybsription
-    Returns: Subscription
-  */
-  reSubscribeToGetAndAssignPosts$(mySubscription: Subscription, myObservable$: Observable<void>): Subscription {
-    // remove old subscription:
-    if (mySubscription !== undefined) {
-      console.log('unsubscribing mySubscription');
-      mySubscription.unsubscribe();
-    }
-
-    // assign new subscription:
-    return myObservable$.subscribe();
   }
 
   getAndAssignPosts$(): Observable<void> {
@@ -78,7 +57,4 @@ export class AppComponent implements OnInit, OnDestroy {
     }));
   }
 
-  ngOnDestroy() {
-    this.mySubscription.unsubscribe();
-  }
 }

@@ -1,10 +1,10 @@
 <h1>Exponential Backoff Timer Test:</h1>
-  <div>current number: {{exponentialBackoffTimer | async}}</div>
+  <div>current number: {{n}}</div>
   <div>Move the mouse to reset it</div>
 
 <h1>Blog Posts</h1>
 
-<!-- <div *ngIf="null === (posts$ | async)">Loading...</div> -->
+<div>{{exponentialBackoffTimer$$ | async | async}}</div>
 
 <ul>
   <li *ngFor="let post of posts" [innerHTML]="post.title" (click)="selectedPost = post"> 
