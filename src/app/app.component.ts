@@ -12,29 +12,32 @@ import { map } from 'rxjs/operators';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  posts$$: Observable<Observable<SafePost[]>>;
+  interval_MSEC = 10000;
+  postsVoid$$: Observable<Observable<void>>;
+  posts: SafePost[];
 
   constructor(private appService: AppService) {}
 
   ngOnInit() {
-    this.posts$$ = this.getRestItemsIntervalBlinkingBehavior$$();
+    this.postsVoid$$ = this.getRestItemsIntervalVoid$$();
   }
 
-  getRestItemsIntervalBlinkingBehavior$$(): Observable<Observable<SafePost[]>> {
-    return interval(10000)
+  getRestItemsIntervalVoid$$(): Observable<Observable<void>> {
+    return interval(this.interval_MSEC)
       .pipe(
         map(
           counter => {
-          console.log(counter + ': read restItems');
-          return this.getRestItems$();
+            console.log(counter + ': read restItems');
+            return this.assignRestItemsToPosts$();
           }
         )
       );
   }
 
-  // Read all REST Items
-  getRestItems$(): Observable<SafePost[]> {
-    return this.appService.getAll()
-      .pipe(posts => posts);
+  assignRestItemsToPosts$(): Observable<void> {
+    return this.appService.getAll().pipe(
+      map(posts => {
+        this.posts = posts;
+      }));
   }
 }

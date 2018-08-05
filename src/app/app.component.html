@@ -1,7 +1,9 @@
 <h1>Blog Posts</h1>
 
+<div hidden>{{postsVoid$$  | async | async}}</div>
+
 <ul>
-  <li *ngFor="let post of (posts$$ | async | async)" [innerHTML]="post.title" (click)="selectedPost = post"> 
+  <li *ngFor="let post of posts" [innerHTML]="post.title" (click)="selectedPost = post"> 
   </li>
 </ul>
 
