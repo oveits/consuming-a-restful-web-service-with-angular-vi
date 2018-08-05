@@ -5,7 +5,7 @@ import { SafePost } from './safe-post.interface';
 
 // exponentialBackoff:
 import { fromEvent } from 'rxjs';
-import { sampleTime, startWith, switchMapTo, tap, map } from 'rxjs/operators';
+import { sampleTime, startWith, switchMapTo, map } from 'rxjs/operators';
 import { intervalBackoff } from 'backoff-rxjs';
 
 export const INITIAL_INTERVAL_MS = 5000; // 5 sec, choose larger than mean response time of REST service called
