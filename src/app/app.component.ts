@@ -3,9 +3,9 @@ import { Observable } from 'rxjs';
 import { AppService } from './app.service';
 import { SafePost } from './safe-post.interface';
 
-// exponentialBackoff:
+// intervalBackoff:
 import { fromEvent } from 'rxjs';
-import { sampleTime, startWith, switchMapTo, map } from 'rxjs/operators';
+import { sampleTime, startWith, switchMapTo, map, switchMap } from 'rxjs/operators';
 import { intervalBackoff } from 'backoff-rxjs';
 
 export const INITIAL_INTERVAL_MS = 5000; // 5 sec, choose larger than mean response time of REST service called
@@ -20,12 +20,12 @@ export const MAX_INTERVAL_MS = 60000; // 1 min
 export class AppComponent implements OnInit {
   posts: SafePost[];
   n: number;
-  exponentialBackoffTimer$$: Observable<Observable<void>>;
+  exponentialBackoffTimer$: Observable<void>;
 
   constructor(private appService: AppService) {}
 
   ngOnInit() {
-    this.exponentialBackoffTimer$$ =
+    this.exponentialBackoffTimer$ =
       fromEvent(document, 'mousemove').pipe(
 
         // There could be many mousemoves, we'd want to sample only
@@ -42,8 +42,7 @@ export class AppComponent implements OnInit {
           maxInterval: MAX_INTERVAL_MS
         })),
 
-        // attaching the function that is to be reset:
-        map( n => {
+        switchMap( n => {
           console.log('iteration since reset: ' + n);
           this.n = n;
           return this.getAndAssignPosts$();

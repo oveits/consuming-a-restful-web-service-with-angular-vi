@@ -9,7 +9,7 @@
 </ng-template>
 
 <!-- if both, posts and  (exponentialBackoffTimer$$ | async | async) are undefined, 'Loading...' is displayed: -->
-<div *ngIf="posts != (exponentialBackoffTimer$$ | async | async); else loading"></div>
+<div *ngIf="posts != (exponentialBackoffTimer$ | async ); else loading"></div>
 
 <ul>
   <li *ngFor="let post of posts" [innerHTML]="post.title" (click)="selectedPost = post"> 
