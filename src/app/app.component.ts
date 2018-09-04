@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { AppService } from './app.service';
 import { SafePost } from './safe-post.interface';
 import { interval } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, flatMap } from 'rxjs/operators';
 
 
 @Component({
@@ -12,20 +12,20 @@ import { map } from 'rxjs/operators';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  interval_MSEC = 10000;
-  postsVoid$$: Observable<Observable<void>>;
+  interval_MSEC = 1000;
+  postsVoid$: Observable<void>;
   posts: SafePost[];
 
   constructor(private appService: AppService) {}
 
   ngOnInit() {
-    this.postsVoid$$ = this.getRestItemsIntervalVoid$$();
+    this.postsVoid$ = this.getRestItemsIntervalVoid$();
   }
 
-  getRestItemsIntervalVoid$$(): Observable<Observable<void>> {
+  getRestItemsIntervalVoid$(): Observable<void> {
     return interval(this.interval_MSEC)
       .pipe(
-        map(
+        flatMap(
           counter => {
             console.log(counter + ': read restItems');
             return this.assignRestItemsToPosts$();
